@@ -1,5 +1,6 @@
-# Simple Akka Cluster
+# Simple Akka Cluster for ConstructR
 
+https://github.com/hseeberger/constructr
 http://chariotsolutions.com/screencast/simple-akka-clustering/
 
 [![Youtube Vides](http://img.youtube.com/vi/6RQb7Hz_TPw/0.jpg)](http://www.youtube.com/watch?v=6RQb7Hz_TPw)
@@ -20,14 +21,17 @@ system.terminate
 
 # Cluster Mode
 ```bash
-sbt console -Dakka.remote.netty.tcp.port=2500 -Dakka.remote.netty.tcp.host=127.0.0.1 -Dakka.actor.provider=akka.cluster.ClusterActorRefProvider
+brew install zookeeper sbt
+zkServer start
+```
+```bash
+sbt console -Dakka.remote.netty.tcp.port=0  -Dakka.actor.provider=akka.cluster.ClusterActorRefProvider
 ```
 ```scala
 val system = TestSystem.system
-Cluster(TestSystem.system).join(Address("akka.tcp", "test-system", "127.0.0.1", 2500))
 ```
 ```bash
-sbt console -Dakka.remote.netty.tcp.port=0 -Dakka.actor.provider=akka.cluster.ClusterActorRefProvider -Dakka.cluster.seed-nodes.0=akka.tcp://test-system@127.0.0.1:2500
+sbt console -Dakka.remote.netty.tcp.port=0 -Dakka.actor.provider=akka.cluster.ClusterActorRefProvider
 ```
 ```scala
 val system = TestSystem.system
@@ -37,4 +41,7 @@ val clusterPool = ClusterRouterPool(roundRobinPool, clusterRouterSetting)
 val router = system.actorOf(clusterPool.props(Props[Logger]))
 (1 to 10).foreach(i => router ! i)
 system.terminate
+```
+```bash
+zkServer stop
 ```
